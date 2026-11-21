@@ -1,9 +1,15 @@
-// Sokoban solver — Candidate B: push-optimal A* with Manhattan heuristic, room by room.
-// Same state and pruning as candidate A (dead squares, frozen 2x2, room
-// decomposition), but the search is A*: f = pushes so far + sum of each box's
+// Sokoban solver — push-optimal A* with Manhattan heuristic, room by room.
+// A state is the boxes' squares plus the player's reachable region (named by its
+// lowest square). Expanding a state = one push (the player walks to the push
+// square first). The search is A*: f = pushes so far + sum of each box's
 // Manhattan distance to its nearest goal. The heuristic is admissible and
 // consistent (one push moves one box one square), so the first solved state
-// popped is push-optimal, and A* expands a subset of the states BFS would.
+// popped is push-optimal, and A* expands a subset of the states a plain BFS
+// over pushes would. Pruning: dead squares (reverse reachability from the
+// goals) and frozen 2x2 blocks. Rooms are solved independently: a box pushed
+// into the hallway can never come back, so the rooms' optima add up to the
+// level's optimum. Pure: no clock, no randomness, fixed direction order,
+// so two runs write the same bytes.
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
